@@ -1,8 +1,11 @@
+const config  = require('./src/config/config');
 const express = require("express");
 const app     = express();
 const authenticationErrorMiddleware = require("./src/middleware/authenticationError");
 
-require("./src/config/db");
+// DB Config
+const { dbConnection } = require('./src/config/dbConnection');
+dbConnection();
 
 // Middleware para procesar solicitudes JSON
 app.use(express.json());
@@ -12,12 +15,12 @@ const mainRoutes = require("./src/routes");
 app.use("/api", mainRoutes);
 app.use(authenticationErrorMiddleware);
 
-const port = process.env.PORT || 3001
-
-app.listen(port, function () {
+app.listen(config.PORT, function () {
   console.log('#---------------------------');
   console.log('# Servidor API en ejecución');
   console.log('#---------------------------');
+  console.log(' ');
+  console.log(`App listening on http://${config.HOST}:${config.PORT}`);
   console.log(' ');
 });
 

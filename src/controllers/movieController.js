@@ -1,20 +1,20 @@
-const Movie = require("../models/movieModel");
-const Review = require("../models/reviewModel");
+const Movie = require("../models/peliculaModel");
+const Review = require("../models/resenaModel");
 
 exports.moviesWithAVG = async (req, res) => {
   try {
     const peliculasConPromedio = await Movie.aggregate([
       {
         $lookup: {
-          from: "reviews",
+          from: "Resena",
           localField: "_id",
           foreignField: "peliculaId",
-          as: "reviews",
+          as: "resena",
         },
       },
       {
         $unwind: {
-          path: "$reviews",
+          path: "$resena",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -26,7 +26,7 @@ exports.moviesWithAVG = async (req, res) => {
           descripcion: { $first: "$descripcion" },
           ratingAvg: {
             $avg: {
-              $ifNull: ["$reviews.calificacion", 0],
+              $ifNull: ["$resena.calificacion", 0],
             },
           },
         },
@@ -66,8 +66,8 @@ exports.saveMovie = async (req, res) => {
   try {
     const nuevaPelicula = new Movie({
       nombre: req.body.nombre,
-      imagen: req.body.imagen,
       descripcion: req.body.descripcion,
+      imagen: req.body.imagen,
     });
 
     const peliculaGuardada = await nuevaPelicula.save();
